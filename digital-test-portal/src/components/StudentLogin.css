@@ -1,0 +1,65 @@
+.sl-page {
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(to bottom, #e8f2ff, #ffffff);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.sl-panel {
+  width: 450px;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  border: 2px solid #3b6fd1;
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* LOGO + TITLE */
+.sl-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.sl-title {
+  font-weight: 600;
+  color: #1f3b7a;
+}
+
+/* STUDENT LOGIN TITLE */
+.sl-subtitle {
+  margin: 15px 0;
+  color: #1f3b7a;
+}
+
+/* INPUTS */
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* FORGOT PASSWORD */
+.forgot {
+  text-align: right;
+  color: #2f68c7;
+  cursor: pointer;
+}
+
+/* LOGIN BUTTON */
+.login-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px;
+  background: #2f68c7;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
