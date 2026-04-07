@@ -12,20 +12,27 @@ export default function TeacherLogin() {
   const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
-    try {
-      await api.auth.login({ identifier, password })
-      showToast('Welcome back!', 'success')
-      navigate('/teacher/dashboard')
-    } catch (err) {
-      setError(err.message || 'Invalid credentials')
-    } finally {
-      setLoading(false)
+  e.preventDefault()
+  setError('')
+  setLoading(true)
+  try {
+    const userData = await api.auth.login({ identifier, password })
+    console.log('✅ Login successful, user data:', userData)  // DEBUG LOG
+    
+    if (!userData || !userData.role) {
+      throw new Error('Invalid response from server')
     }
+    
+    showToast('Welcome back!', 'success')
+    console.log('🚀 Navigating to dashboard...')  // DEBUG LOG
+    navigate('/student/dashboard')
+  } catch (err) {
+    console.error('❌ Login error:', err)  // DEBUG LOG
+    setError(err.message || 'Invalid credentials')
+  } finally {
+    setLoading(false)
   }
-
+}
   return (
     <div className="login-page teacher-bg">
       <div className="login-card teacher">

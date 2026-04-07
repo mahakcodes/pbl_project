@@ -1,6 +1,3 @@
-
-
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApp } from '../context/AppContext'
@@ -16,13 +13,23 @@ export default function StudentLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    console.log('📝 Form submitted with:', { identifier, password })
     setError('')
     setLoading(true)
     try {
-      await api.auth.login({ identifier, password })
+      console.log('🚀 Calling API...')
+      const userData = await api.auth.login({ identifier, password })
+      console.log('✅ Login successful:', userData)
+      
+      if (!userData || !userData.role) {
+        throw new Error('Invalid response from server')
+      }
+      
       showToast('Welcome back!', 'success')
+      console.log('🔄 Navigating to dashboard...')
       navigate('/student/dashboard')
     } catch (err) {
+      console.error('❌ Login failed:', err)
       setError(err.message || 'Invalid credentials')
     } finally {
       setLoading(false)
@@ -40,11 +47,24 @@ export default function StudentLogin() {
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email or Roll Number</label>
-            <input type="text" placeholder="Enter email or roll number" value={identifier} onChange={e => setIdentifier(e.target.value)} />
+            <input 
+              type="text" 
+              placeholder="Enter email or roll number" 
+              value={identifier} 
+              onChange={e => {
+                console.log('📝 Identifier changed:', e.target.value)
+                setIdentifier(e.target.value)
+              }} 
+            />
           </div>
           <div className="form-group">
             <label>Password</label>
-            <input type="password" placeholder="Enter your password" value={password} onChange={e => setPassword(e.target.value)} />
+            <input 
+              type="password" 
+              placeholder="Enter your password" 
+              value={password} 
+              onChange={e => setPassword(e.target.value)} 
+            />
           </div>
           <button type="submit" className="login-btn student-btn" disabled={loading}>
             {loading ? <span className="spinner"></span> : 'Sign In'}
