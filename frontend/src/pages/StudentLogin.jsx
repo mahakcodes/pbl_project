@@ -5,7 +5,8 @@ import { api } from '../api/client'
 
 export default function StudentLogin() {
   const navigate = useNavigate()
-  const { showToast } = useApp()
+  const { showToast, setUser } = useApp()
+
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -13,23 +14,28 @@ export default function StudentLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    console.log('📝 Form submitted with:', { identifier, password })
     setError('')
     setLoading(true)
+
     try {
-      console.log('🚀 Calling API...')
       const userData = await api.auth.login({ identifier, password })
-      console.log('✅ Login successful:', userData)
-      
+
+      // ✅ validate first
       if (!userData || !userData.role) {
-        throw new Error('Invalid response from server')
+        throw new Error('Invalid credentials')
       }
-      
+
+      // ✅ set user properly
+      setUser(userData)
+      localStorage.setItem('user', JSON.stringify(userData))
+
       showToast('Welcome back!', 'success')
-      console.log('🔄 Navigating to dashboard...')
+
+      // ✅ navigate only once
       navigate('/student/dashboard')
+
     } catch (err) {
-      console.error('❌ Login failed:', err)
+      console.error('Login error:', err)
       setError(err.message || 'Invalid credentials')
     } finally {
       setLoading(false)
@@ -40,32 +46,34 @@ export default function StudentLogin() {
     <div className="login-page student-bg">
       <div className="login-card student">
         <button className="back-btn" onClick={() => navigate('/')}>←</button>
+
         <div className="login-icon">🎓</div>
         <h2>Student Login</h2>
         <p className="login-subtitle">Enter your credentials to access the portal</p>
+
         {error && <div className="login-error">⚠ {error}</div>}
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Email or Roll Number</label>
-            <input 
-              type="text" 
-              placeholder="Enter email or roll number" 
-              value={identifier} 
-              onChange={e => {
-                console.log('📝 Identifier changed:', e.target.value)
-                setIdentifier(e.target.value)
-              }} 
+            <input
+              type="text"
+              placeholder="Enter email or roll number"
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
             />
           </div>
+
           <div className="form-group">
             <label>Password</label>
-            <input 
-              type="password" 
-              placeholder="Enter your password" 
-              value={password} 
-              onChange={e => setPassword(e.target.value)} 
+            <input
+              type="password"
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
             />
           </div>
+
           <button type="submit" className="login-btn student-btn" disabled={loading}>
             {loading ? <span className="spinner"></span> : 'Sign In'}
           </button>
