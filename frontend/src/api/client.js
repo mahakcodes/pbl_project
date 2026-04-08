@@ -1,41 +1,44 @@
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api'
 
 const request = async (endpoint, options = {}) => {
-  console.log('🌐 API Request:', `${API_BASE}${endpoint}`)  // DEBUG
   const response = await fetch(`${API_BASE}${endpoint}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
+    headers: { 'Content-Type': 'application/json', ...options.headers },
     ...options,
   })
-  
-  console.log('📥 API Response status:', response.status)  // DEBUG
-  
   if (!response.ok) {
     const error = await response.json().catch(() => ({ message: 'Network error' }))
     throw error
   }
-  
   return response.json()
 }
 
 export const api = {
   auth: {
-    login: (data) => {
-      console.log('🔐 Attempting login with:', data)  // DEBUG
-      return request('/auth/login/', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      })
-    },
+    login: (data) => request('/auth/login/', { method: 'POST', body: JSON.stringify(data) }),
   },
   student: {
-    dashboard: () => request('/tests/student/dashboard/'),
-    tests: () => request('/tests/student/tests/'),
+    dashboard: (uid) => request(`/tests/student/dashboard/?user_id=${uid}`),
+    tests: (uid) => request(`/tests/student/tests/?user_id=${uid}`),
+    testDetail: (tid) => request(`/tests/student/tests/${tid}/`),
+    questions: (tid, uid) => request(`/tests/student/tests/${tid}/questions/?user_id=${uid}`),
+    startTest: (tid, uid) => request(`/tests/student/tests/${tid}/start/`, { method: 'POST', body: JSON.stringify({ user_id: uid }) }),
+    saveAnswer: (tid, uid, question_id, selected_option) => request(`/tests/student/tests/${tid}/save-answer/`, { method: 'POST', body: JSON.stringify({ user_id: uid, question_id, selected_option }) }),
+    submitTest: (tid, uid, auto = false) => request(`/tests/student/tests/${tid}/submit/`, { method: 'POST', body: JSON.stringify({ user_id: uid, auto_submitted: auto }) }),
+    result: (tid, uid) => request(`/tests/student/tests/${tid}/result/?user_id=${uid}`),
+    review: (tid, uid) => request(`/tests/student/tests/${tid}/review/?user_id=${uid}`),
   },
   teacher: {
-    dashboard: () => request('/tests/teacher/dashboard/'),
-    tests: () => request('/tests/teacher/tests/'),
+    dashboard: (uid) => request(`/tests/teacher/dashboard/?user_id=${uid}`),
+    tests: (uid) => request(`/tests/teacher/tests/?user_id=${uid}`),
+    createTest: (data) => request('/tests/teacher/tests/create/', { method: 'POST', body: JSON.stringify(data) }),
+    editTest: (tid, data) => request(`/tests/teacher/tests/${tid}/edit/`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteTest: (tid) => request(`/tests/teacher/tests/${tid}/delete/`, { method: 'DELETE' }),
+    addQuestion: (tid, data) => request(`/tests/teacher/tests/${tid}/add-question/`, { method: 'POST', body: JSON.stringify(data) }),
+    questions: (tid) => request(`/tests/teacher/tests/${tid}/questions/`),
+    editQuestion: (qid, data) => request(`/tests/teacher/questions/${qid}/edit/`, { method: 'PUT', body: JSON.stringify(data) }),
+    deleteQuestion: (qid) => request(`/tests/teacher/questions/${qid}/edit/`, { method: 'DELETE' }),
+    publishTest: (tid) => request(`/tests/teacher/tests/${tid}/publish/`, { method: 'POST' }),
+    submissions: (tid) => request(`/tests/teacher/tests/${tid}/submissions/`),
+    analytics: (tid) => request(`/tests/teacher/tests/${tid}/analytics/`),
   },
 }

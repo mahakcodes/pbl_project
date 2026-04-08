@@ -17,7 +17,7 @@ export default function TeacherCreateTest() {
     }
     showToast(`Test "${form.testName}" created as draft!`, 'success')
     setForm({ testName: '', subject: '', numQuestions: '', totalMarks: '', duration: '', durationUnit: 'Hours', scheduledDate: '', startTime: '', endTime: '', description: '' })
-    setTimeout(() => navigate('/teacher/tests'), 800)
+    setTimeout(() => navigate(`/teacher/tests/${newTest.id}/add-questions`), 800)
   }
 
   return (
