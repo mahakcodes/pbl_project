@@ -5,7 +5,7 @@ import { api } from '../api/client'
 
 export default function TeacherLogin() {
   const navigate = useNavigate()
-  const { showToast } = useApp()
+  const { showToast, setUser } = useApp()
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -17,15 +17,14 @@ export default function TeacherLogin() {
   setLoading(true)
   try {
     const userData = await api.auth.login({ identifier, password })
-    console.log('✅ Login successful, user data:', userData)  // DEBUG LOG
-    
+    console.log('✅ Login successful, user data:', userData)
     if (!userData || !userData.role) {
-      throw new Error('Invalid response from server')
-    }
-    
+    throw new Error('Invalid response from server')
+        }
+    setUser(userData)
+    localStorage.setItem('user', JSON.stringify(userData))
     showToast('Welcome back!', 'success')
-    console.log('🚀 Navigating to dashboard...')  // DEBUG LOG
-    navigate('/student/dashboard')
+    navigate('/teacher/dashboard')
   } catch (err) {
     console.error('❌ Login error:', err)  // DEBUG LOG
     setError(err.message || 'Invalid credentials')
