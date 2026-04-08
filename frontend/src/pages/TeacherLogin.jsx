@@ -17,10 +17,7 @@ export default function TeacherLogin() {
     setLoading(true)
 
     try {
-      const userData = await api.auth.login({
-        username: identifier,   // ✅ FIX HERE
-        password
-      })
+      const userData = await api.auth.login({ identifier: identifier, password })
 
       console.log('✅ Login successful, user data:', userData)
 
