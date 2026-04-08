@@ -18,7 +18,7 @@ export default function StudentLogin() {
     setLoading(true)
 
     try {
-      const userData = await api.auth.login({ identifier: identifier, password })
+      const userData = await api.auth.login({ username: identifier, password })
 
       // ✅ validate first
       if (!userData || !userData.role) {
