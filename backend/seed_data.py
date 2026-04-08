@@ -14,9 +14,7 @@ s, created = CustomUser.objects.get_or_create(
         'department': 'Computer Science'
     }
 )
-
-# ✅ ALWAYS set password (important for consistency)
-s.set_password('123456')
+s.set_password('student123')  # ← Updated password
 s.save()
 
 # ---- TEACHER ----
@@ -31,9 +29,7 @@ t, created = CustomUser.objects.get_or_create(
         'department': 'Computer Science'
     }
 )
-
-# ✅ ALWAYS set password
-t.set_password('123456')
+t.set_password('teacher123')  # ← Updated password
 t.save()
 
 # ---- TESTS ----
@@ -82,5 +78,5 @@ if Test.objects.count() == 0:
         test.assigned_students.add(s)
 
 print("✅ Seeding done.")
-print("Student → student@college.edu / 123456")
-print("Teacher → teacher@college.edu / 123456")
+print("Student → student@college.edu / student123")
+print("Teacher → teacher@college.edu / teacher123")
