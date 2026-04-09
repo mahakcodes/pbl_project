@@ -1,26 +1,24 @@
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework import serializers
-from django.contrib.auth import authenticate
-from .models import CustomUser
 
+User = get_user_model()
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField()   # frontend se email aa raha hai
-    password = serializers.CharField(write_only=True)
+    email = serializers.EmailField()
+    password = serializers.CharField()
 
     def validate(self, data):
-        identifier = data.get('username')
-        password = data.get('password')
+        email = data.get("email")
+        password = data.get("password")
 
-        if not identifier or not password:
-            raise serializers.ValidationError("Email and password required")
+        user_obj = User.objects.filter(email=email).first()
 
-        # 👇 email ko username field me pass kar rahe (kyunki USERNAME_FIELD = 'email')
-        user = authenticate(username=identifier, password=password)
+        if user_obj:
+            user = authenticate(username=user_obj.username, password=password)
+        else:
+            user = None
 
         if not user:
             raise serializers.ValidationError("Invalid credentials")
 
-        if not user.is_active:
-            raise serializers.ValidationError("User inactive")
-
-        return {'user': user}
+        return {"user": user}
