@@ -3,17 +3,22 @@ from rest_framework import serializers
 
 User = get_user_model()
 
-
 class LoginSerializer(serializers.Serializer):
-    email = serializers.CharField()
+    username = serializers.CharField(required=False)
+    email = serializers.CharField(required=False)
     password = serializers.CharField()
 
     def validate(self, data):
+        username = data.get("username")
         email = data.get("email")
         password = data.get("password")
 
-        # user find by email
-        user_obj = User.objects.filter(email=email).first()
+        user_obj = None
+
+        if username:
+            user_obj = User.objects.filter(username=username).first()
+        elif email:
+            user_obj = User.objects.filter(email=email).first()
 
         if user_obj:
             user = authenticate(
