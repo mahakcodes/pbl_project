@@ -1,4 +1,4 @@
-from django.contrib.auth import authenticate, get_user_model
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
 User = get_user_model()
@@ -13,22 +13,14 @@ class LoginSerializer(serializers.Serializer):
         email = data.get("email")
         password = data.get("password")
 
-        user_obj = None
+        user = None
 
         if username:
-            user_obj = User.objects.filter(username=username).first()
+            user = User.objects.filter(username=username).first()
         elif email:
-            user_obj = User.objects.filter(email=email).first()
+            user = User.objects.filter(email=email).first()
 
-        if user_obj:
-            user = authenticate(
-                username=user_obj.username,
-                password=password
-            )
-        else:
-            user = None
+        if user and user.check_password(password):
+            return {"user": user}
 
-        if user is None:
-            raise serializers.ValidationError("Invalid credentials")
-
-        return {"user": user}
+        raise serializers.ValidationError("Invalid credentials")
