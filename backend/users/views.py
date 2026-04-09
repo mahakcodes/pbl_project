@@ -31,12 +31,14 @@ class LoginView(generics.GenericAPIView):
 
 @api_view(['GET'])
 def create_teacher(request):
-    if not User.objects.filter(username="teacher").exists():
-        User.objects.create_user(
-            username="teacher",
-            email="teacher@college.edu",
-            password="1234",
-            role="teacher"
-        )
-        return Response({"msg": "Teacher created"})
-    return Response({"msg": "Teacher already exists"})
+    try:
+        if not User.objects.filter(username="teacher").exists():
+            User.objects.create_user(
+                username="teacher",
+                email="teacher@college.edu",
+                password="1234"
+            )
+            return Response({"msg": "Teacher created"})
+        return Response({"msg": "Teacher already exists"})
+    except Exception as e:
+        return Response({"error": str(e)})
