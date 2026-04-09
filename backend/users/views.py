@@ -29,33 +29,37 @@ class LoginView(generics.GenericAPIView):
         })
 
 
-# 🔥 Teacher create
+# 🔥 Teacher create (FIXED)
 @api_view(['GET'])
 def create_teacher(request):
     try:
         User.objects.filter(username="teacher@college.edu").delete()
 
-        User.objects.create_user(
+        user = User.objects.create(
             username="teacher@college.edu",
-            email="teacher@college.edu",
-            password="123456"
+            email="teacher@college.edu"
         )
+        user.set_password("123456")   # ✅ force correct hashing
+        user.save()
+
         return Response({"msg": "Teacher reset done"})
     except Exception as e:
         return Response({"error": str(e)})
 
 
-# 🔥 Student create
+# 🔥 Student create (FIXED)
 @api_view(['GET'])
 def create_student(request):
     try:
         User.objects.filter(username="student@college.edu").delete()
 
-        User.objects.create_user(
+        user = User.objects.create(
             username="student@college.edu",
-            email="student@college.edu",
-            password="123456"
+            email="student@college.edu"
         )
+        user.set_password("123456")   # ✅ force correct hashing
+        user.save()
+
         return Response({"msg": "Student reset done"})
     except Exception as e:
         return Response({"error": str(e)})
