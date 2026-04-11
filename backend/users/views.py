@@ -18,7 +18,7 @@ class LoginView(generics.GenericAPIView):
             'id': u.id,
             'username': u.username,
             'email': u.email,
-            'role': u.role, # <--- Ye bohat zaroori hai
+            'role': u.role, 
             'roll_number': u.roll_number,
             'employee_id': u.employee_id,
             'department': u.department,
@@ -26,7 +26,7 @@ class LoginView(generics.GenericAPIView):
             'last_name': u.last_name
         })
 
-# 🔥 Teacher create (FIXED with Role)
+# 🔥 Teacher create (FIXED: Role changed from 'admin' to 'teacher')
 @api_view(['GET'])
 def create_teacher(request):
     try:
@@ -34,17 +34,19 @@ def create_teacher(request):
         user = User.objects.create(
             username="teacher@college.edu",
             email="teacher@college.edu",
-            role="admin", # ✅ Role specify karna zaroori hai
+            role="teacher", # ✅ Fixed: Frontend 'teacher' check pass karega
+            is_staff=True,   # Django admin access ke liye
+            is_superuser=True,
             first_name="Demo",
             last_name="Teacher"
         )
         user.set_password("123456")
         user.save()
-        return Response({"msg": "Teacher reset done with Admin role"})
+        return Response({"msg": "Teacher reset done with TEACHER role"})
     except Exception as e:
         return Response({"error": str(e)})
 
-# 🔥 Student create (FIXED with Role)
+# 🔥 Student create (Role is already correct)
 @api_view(['GET'])
 def create_student(request):
     try:
@@ -52,7 +54,7 @@ def create_student(request):
         user = User.objects.create(
             username="student@college.edu",
             email="student@college.edu",
-            role="student", # ✅ Role specify karna zaroori hai
+            role="student",
             first_name="Demo",
             last_name="Student",
             roll_number="STU001"
