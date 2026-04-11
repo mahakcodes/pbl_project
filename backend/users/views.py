@@ -1,12 +1,10 @@
 from rest_framework import generics, permissions
 from rest_framework.response import Response
 from .serializers import LoginSerializer
-
 from django.contrib.auth import get_user_model
 from rest_framework.decorators import api_view
 
 User = get_user_model()
-
 
 class LoginView(generics.GenericAPIView):
     serializer_class = LoginSerializer
@@ -20,7 +18,7 @@ class LoginView(generics.GenericAPIView):
             'id': u.id,
             'username': u.username,
             'email': u.email,
-            'role': u.role,
+            'role': u.role, # <--- Ye bohat zaroori hai
             'roll_number': u.roll_number,
             'employee_id': u.employee_id,
             'department': u.department,
@@ -28,38 +26,39 @@ class LoginView(generics.GenericAPIView):
             'last_name': u.last_name
         })
 
-
-# 🔥 Teacher create (FIXED)
+# 🔥 Teacher create (FIXED with Role)
 @api_view(['GET'])
 def create_teacher(request):
     try:
         User.objects.filter(username="teacher@college.edu").delete()
-
         user = User.objects.create(
             username="teacher@college.edu",
-            email="teacher@college.edu"
+            email="teacher@college.edu",
+            role="admin", # ✅ Role specify karna zaroori hai
+            first_name="Demo",
+            last_name="Teacher"
         )
-        user.set_password("123456")   # ✅ force correct hashing
+        user.set_password("123456")
         user.save()
-
-        return Response({"msg": "Teacher reset done"})
+        return Response({"msg": "Teacher reset done with Admin role"})
     except Exception as e:
         return Response({"error": str(e)})
 
-
-# 🔥 Student create (FIXED)
+# 🔥 Student create (FIXED with Role)
 @api_view(['GET'])
 def create_student(request):
     try:
         User.objects.filter(username="student@college.edu").delete()
-
         user = User.objects.create(
             username="student@college.edu",
-            email="student@college.edu"
+            email="student@college.edu",
+            role="student", # ✅ Role specify karna zaroori hai
+            first_name="Demo",
+            last_name="Student",
+            roll_number="STU001"
         )
-        user.set_password("123456")   # ✅ force correct hashing
+        user.set_password("123456")
         user.save()
-
-        return Response({"msg": "Student reset done"})
+        return Response({"msg": "Student reset done with Student role"})
     except Exception as e:
         return Response({"error": str(e)})

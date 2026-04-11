@@ -1,23 +1,28 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
 class LoginSerializer(serializers.Serializer):
     username = serializers.CharField()
-    password = serializers.CharField()
+    password = serializers.CharField(write_only=True)
 
     def validate(self, data):
-        username = data.get("username")
-        password = data.get("password")
+        username = data.get('username')
+        password = data.get('password')
 
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            raise serializers.ValidationError("User not found")
+        if username and password:
+            # ✅ authenticate() use karna zaroori hai hashed password ke liye
+            user = authenticate(username=username, password=password)
+            
+            if not user:
+                raise serializers.ValidationError("Invalid username or password.")
+            
+            if not user.is_active:
+                raise serializers.ValidationError("User account is disabled.")
+        else:
+            raise serializers.ValidationError("Must include 'username' and 'password'.")
 
-        # 🔥 IMPORTANT: password check
-        if not user.check_password(password):
-            raise serializers.ValidationError("Wrong password")
-
-        return {"user": user}
+        data['user'] = user
+        return data
